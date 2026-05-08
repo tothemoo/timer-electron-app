@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.minimize {
+  cursor: pointer;
+}
+
+.close {
+  cursor: pointer;
+}
+
+.topbar {
+  -webkit-app-region: drag;
+}

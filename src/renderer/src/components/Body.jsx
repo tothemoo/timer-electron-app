@@ -8,6 +8,7 @@ import {
   faPenToSquare,
   faPause
 } from '@fortawesome/free-solid-svg-icons'
+
 const Body = ({ isOverlay }) => {
   const [isEditing, setIsEditing] = useState(true)
   const [minutes, setMinutes] = useState(1)
@@ -21,28 +22,30 @@ const Body = ({ isOverlay }) => {
     if (isActive) {
       intervalId = setInterval(() => {
         if (seconds > 0) {
-          setSeconds((seconds) => seconds - 1)
+          setSeconds((s) => s - 1)
         } else {
           if (minutes === 0 && hours === 0) {
             clearInterval(intervalId)
             setIsActive(false)
+          } else if (minutes === 0) {
+            setHours((h) => h - 1)
+            setMinutes(59)
+            setSeconds(59)
           } else {
-            if (minutes === 0) {
-              setHours((hours) => hours - 1)
-              setMinutes(59)
-            } else {
-              setMinutes((minutes) => minutes - 1)
-            }
+            setMinutes((m) => m - 1)
             setSeconds(59)
           }
         }
       }, 1000)
     }
-  })
+
+    // ✅ Cleanup on every re-run to avoid stacked intervals
+    return () => clearInterval(intervalId)
+  }, [isActive, seconds, minutes, hours])
+
   return (
     <div>
       {isEditing ? (
-        //editing component
         <div className="flex justify-center">
           <div>
             <InputField
@@ -69,10 +72,11 @@ const Body = ({ isOverlay }) => {
           </div>
         </div>
       ) : (
-        //timer components
         <>
           <div className="flex justify-center">
-            <h1 className="text-green-500 text-6xl">{`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, 0)}:${seconds.toString().padStart(2, 0)}`}</h1>
+            <h1 className="text-green-500 text-6xl">
+              {`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`}
+            </h1>
           </div>
           <div
             id="timer-button"
@@ -80,16 +84,24 @@ const Body = ({ isOverlay }) => {
           >
             {isActive ? (
               <>
-                <button className="text-green-500 text-2xl">
+                <button className="text-green-500 text-2xl" onClick={() => setIsActive(false)}>
                   <FontAwesomeIcon icon={faPause} />
                 </button>
-                <button className="text-green-500 text-2xl">
+                <button
+                  className="text-green-500 text-2xl"
+                  onClick={() => {
+                    setIsActive(false)
+                    setHours(0)
+                    setMinutes(0)
+                    setSeconds(0)
+                  }}
+                >
                   <FontAwesomeIcon icon={faStop} />
                 </button>
               </>
             ) : (
               <>
-                <button className="text-green-500 text-2xl">
+                <button className="start text-green-500 text-2xl" onClick={() => setIsActive(true)}>
                   <FontAwesomeIcon icon={faCirclePlay} />
                 </button>
                 <button className="text-green-500 text-2xl" onClick={() => setIsEditing(true)}>

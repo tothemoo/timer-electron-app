@@ -9,8 +9,9 @@ function App() {
   return (
     <>
       <Topbar />
-      <Body />
-      
+      <div className="bg-black bg-opacity-40 p-2">
+        <Body />
+      </div>
     </>
   )
 }
